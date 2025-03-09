@@ -21,12 +21,13 @@ export interface Profile {
 export interface Establishment {
   id: string;
   owner_id: string;
-  establishment_name: string;
-  dti_certificate_no: string;
+  name: string; // Changed from establishment_name
+  dtiNumber: string; // Changed from dti_certificate_no
   status: EstablishmentStatus;
   rejection_reason?: string;
   created_at: string;
   updated_at: string;
+  applications?: Application[]; // Added to match Dashboard usage
 }
 
 export interface Application {

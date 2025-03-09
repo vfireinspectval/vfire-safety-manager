@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
-import { Shield, ClipboardCheck, Building, CheckCircle } from 'lucide-react';
+import { Shield, ClipboardCheck, Building, CheckCircle, Flame } from 'lucide-react';
 
 export default function Index() {
   return (

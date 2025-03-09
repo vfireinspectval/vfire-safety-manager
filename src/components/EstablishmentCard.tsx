@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Building, Calendar, Clock, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Application, Establishment } from '@/types/application';
 
-interface EstablishmentCardProps extends Establishment {}
+interface EstablishmentCardProps extends Omit<Establishment, 'owner_id' | 'created_at' | 'updated_at'> {}
 
 const EstablishmentCard = ({ 
   id, 

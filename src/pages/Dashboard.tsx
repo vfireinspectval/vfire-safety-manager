@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -23,29 +22,38 @@ import { ApplicationType, Establishment } from '@/types/application';
 const mockEstablishments: Establishment[] = [
   {
     id: '1',
+    owner_id: 'owner1',
     name: 'ABC Restaurant',
     dtiNumber: 'DTI-123456789',
     status: 'registered',
+    created_at: '2023-01-01',
+    updated_at: '2023-01-01',
     applications: [
       {
         id: 'app1',
-        type: 'fsic-business',
-        status: 'Approved',
+        type: 'fsic-business' as ApplicationType,
+        status: 'approved' as ApplicationStatus,
         date: '2023-11-15'
-      }
+      } as any
     ]
   },
   {
     id: '2',
+    owner_id: 'owner1',
     name: 'XYZ Coffee Shop',
     dtiNumber: 'DTI-987654321',
     status: 'pending',
+    created_at: '2023-01-01',
+    updated_at: '2023-01-01',
   },
   {
     id: '3',
+    owner_id: 'owner1',
     name: 'Main Street Mall',
     dtiNumber: 'DTI-456789123',
     status: 'unregistered',
+    created_at: '2023-01-01',
+    updated_at: '2023-01-01',
   }
 ];
 
@@ -325,7 +333,7 @@ const Dashboard = () => {
                           id={establishment.id}
                           name={establishment.name}
                           dtiNumber={establishment.dtiNumber}
-                          status={establishment.status as any}
+                          status={establishment.status}
                           applications={establishment.applications}
                         />
                       ))}
@@ -471,7 +479,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar userRole={userRole} userName={userName} />
+      <Navbar />
       
       <div className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
