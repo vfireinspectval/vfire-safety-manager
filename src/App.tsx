@@ -16,47 +16,55 @@ import NotFound from "./pages/NotFound";
 import Unauthorized from "./pages/Unauthorized";
 import ProfilePage from "./pages/ProfilePage";
 
+// Placeholder component for missing pages
+const PlaceholderPage = ({ title }: { title: string }) => (
+  <div className="container mx-auto py-10">
+    <h1 className="text-2xl font-bold mb-4">{title}</h1>
+    <p>This page is under construction.</p>
+  </div>
+);
+
 // Admin Pages
-import AdminDashboard from "./pages/admin/Dashboard";
-import AdminUsers from "./pages/admin/users/UsersList";
-import AdminUserDetails from "./pages/admin/users/UserDetails";
-import AdminPendingUsers from "./pages/admin/users/PendingUsers";
-import AdminEstablishments from "./pages/admin/establishments/EstablishmentsList";
-import AdminEstablishmentDetails from "./pages/admin/establishments/EstablishmentDetails";
-import AdminPendingEstablishments from "./pages/admin/establishments/PendingEstablishments";
-import AdminFsecApplications from "./pages/admin/applications/FsecApplications";
-import AdminFsicOccupancyApplications from "./pages/admin/applications/FsicOccupancyApplications";
-import AdminFsicBusinessApplications from "./pages/admin/applications/FsicBusinessApplications";
-import AdminApplicationDetails from "./pages/admin/applications/ApplicationDetails";
-import AdminInspections from "./pages/admin/inspections/InspectionsList";
-import AdminInspectionDetails from "./pages/admin/inspections/InspectionDetails";
-import AdminScheduleInspection from "./pages/admin/inspections/ScheduleInspection";
-import AdminRescheduleInspection from "./pages/admin/inspections/RescheduleInspection";
-import AdminUploadCertificate from "./pages/admin/certificates/UploadCertificate";
+const AdminDashboard = () => <PlaceholderPage title="Admin Dashboard" />;
+const AdminUsers = () => <PlaceholderPage title="Admin Users" />;
+const AdminUserDetails = () => <PlaceholderPage title="Admin User Details" />;
+const AdminPendingUsers = () => <PlaceholderPage title="Admin Pending Users" />;
+const AdminEstablishments = () => <PlaceholderPage title="Admin Establishments" />;
+const AdminEstablishmentDetails = () => <PlaceholderPage title="Admin Establishment Details" />;
+const AdminPendingEstablishments = () => <PlaceholderPage title="Admin Pending Establishments" />;
+const AdminFsecApplications = () => <PlaceholderPage title="Admin FSEC Applications" />;
+const AdminFsicOccupancyApplications = () => <PlaceholderPage title="Admin FSIC Occupancy Applications" />;
+const AdminFsicBusinessApplications = () => <PlaceholderPage title="Admin FSIC Business Applications" />;
+const AdminApplicationDetails = () => <PlaceholderPage title="Admin Application Details" />;
+const AdminInspections = () => <PlaceholderPage title="Admin Inspections" />;
+const AdminInspectionDetails = () => <PlaceholderPage title="Admin Inspection Details" />;
+const AdminScheduleInspection = () => <PlaceholderPage title="Admin Schedule Inspection" />;
+const AdminRescheduleInspection = () => <PlaceholderPage title="Admin Reschedule Inspection" />;
+const AdminUploadCertificate = () => <PlaceholderPage title="Admin Upload Certificate" />;
 
 // Inspector Pages
-import InspectorDashboard from "./pages/inspector/Dashboard";
-import InspectorInspections from "./pages/inspector/inspections/InspectionsList";
-import InspectorInspectionDetails from "./pages/inspector/inspections/InspectionDetails";
-import InspectorChecklist from "./pages/inspector/inspections/Checklist";
-import InspectorViewChecklist from "./pages/inspector/inspections/ViewChecklist";
+const InspectorDashboard = () => <PlaceholderPage title="Inspector Dashboard" />;
+const InspectorInspections = () => <PlaceholderPage title="Inspector Inspections" />;
+const InspectorInspectionDetails = () => <PlaceholderPage title="Inspector Inspection Details" />;
+const InspectorChecklist = () => <PlaceholderPage title="Inspector Checklist" />;
+const InspectorViewChecklist = () => <PlaceholderPage title="Inspector View Checklist" />;
 
 // Owner Pages
-import OwnerDashboard from "./pages/owner/Dashboard";
-import OwnerEstablishments from "./pages/owner/establishments/EstablishmentsList";
-import OwnerEstablishmentDetails from "./pages/owner/establishments/EstablishmentDetails";
-import OwnerRegisterEstablishment from "./pages/owner/establishments/RegisterEstablishment";
-import OwnerApplications from "./pages/owner/applications/ApplicationsList";
-import OwnerApplicationDetails from "./pages/owner/applications/ApplicationDetails";
-import OwnerApplySelect from "./pages/owner/applications/ApplySelect";
-import OwnerFsecApplication from "./pages/owner/applications/FsecApplication";
-import OwnerFsicOccupancyApplication from "./pages/owner/applications/FsicOccupancyApplication";
-import OwnerFsicBusinessApplication from "./pages/owner/applications/FsicBusinessApplication";
-import OwnerApplicationConfirmation from "./pages/owner/applications/ApplicationConfirmation";
+const OwnerDashboard = () => <PlaceholderPage title="Owner Dashboard" />;
+const OwnerEstablishments = () => <PlaceholderPage title="Owner Establishments" />;
+const OwnerEstablishmentDetails = () => <PlaceholderPage title="Owner Establishment Details" />;
+const OwnerRegisterEstablishment = () => <PlaceholderPage title="Owner Register Establishment" />;
+const OwnerApplications = () => <PlaceholderPage title="Owner Applications" />;
+const OwnerApplicationDetails = () => <PlaceholderPage title="Owner Application Details" />;
+const OwnerApplySelect = () => <PlaceholderPage title="Owner Apply Select" />;
+const OwnerFsecApplication = () => <PlaceholderPage title="Owner FSEC Application" />;
+const OwnerFsicOccupancyApplication = () => <PlaceholderPage title="Owner FSIC Occupancy Application" />;
+const OwnerFsicBusinessApplication = () => <PlaceholderPage title="Owner FSIC Business Application" />;
+const OwnerApplicationConfirmation = () => <PlaceholderPage title="Owner Application Confirmation" />;
 
 // Shared Pages
-import CalendarPage from "./pages/shared/CalendarPage";
-import ViewCertificate from "./pages/shared/ViewCertificate";
+const CalendarPage = () => <PlaceholderPage title="Calendar" />;
+const ViewCertificate = () => <PlaceholderPage title="View Certificate" />;
 
 const queryClient = new QueryClient();
 

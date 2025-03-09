@@ -16,6 +16,7 @@ export interface Profile {
   rejection_reason?: string;
   created_at: string;
   updated_at: string;
+  email?: string; // Added email property
 }
 
 export interface Establishment {

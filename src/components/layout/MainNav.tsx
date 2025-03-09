@@ -7,7 +7,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useAuth } from '@/context/AuthContext';
 
 export function MainNav() {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const userRole = profile?.role || 'owner';
   
   const getDashboardPath = () => {

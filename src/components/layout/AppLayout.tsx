@@ -69,7 +69,7 @@ export function AppLayout() {
               </div>
               <div className="text-sm">
                 <p className="font-medium">{profile?.first_name} {profile?.last_name}</p>
-                <p className="text-xs text-muted-foreground">{profile?.email || user.email}</p>
+                <p className="text-xs text-muted-foreground">{user?.email}</p>
               </div>
             </div>
             <Button size="icon" variant="ghost" onClick={handleLogout} title="Logout">
