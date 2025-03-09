@@ -3,48 +3,53 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Flame, Menu, X, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/button';
 
-type NavbarProps = {
-  userRole?: 'admin' | 'inspector' | 'owner' | null;
-  userName?: string;
-};
-
-const Navbar = ({ userRole, userName }: NavbarProps) => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, profile, signOut, isLoading } = useAuth();
 
-  const handleLogout = () => {
-    // For now this just navigates to login
-    // In the future, this will clear auth state
+  const handleLogout = async () => {
+    await signOut();
     navigate('/login');
   };
 
   // Menu items based on role
-  const menuItems = userRole 
-    ? userRole === 'admin' 
-      ? [
+  const getMenuItems = () => {
+    if (!user || isLoading) {
+      return [
+        { name: 'Home', path: '/' },
+        { name: 'Login', path: '/login' },
+      ];
+    }
+
+    switch (profile?.role) {
+      case 'admin':
+        return [
           { name: 'Dashboard', path: '/dashboard' },
           { name: 'User Accounts', path: '/user-accounts' },
           { name: 'Establishments', path: '/establishments' },
           { name: 'Applications', path: '/applications' },
-        ] 
-      : userRole === 'inspector' 
-        ? [
-            { name: 'Dashboard', path: '/dashboard' },
-            { name: 'Assigned Inspections', path: '/assigned-inspections' },
-          ]
-        : // Owner role
-          [
-            { name: 'Dashboard', path: '/dashboard' },
-            { name: 'My Establishments', path: '/my-establishments' },
-            { name: 'My Applications', path: '/my-applications' },
-          ]
-    : // Not logged in
-      [
-        { name: 'Home', path: '/' },
-        { name: 'Login', path: '/login' },
-      ];
+        ];
+      case 'inspector':
+        return [
+          { name: 'Dashboard', path: '/dashboard' },
+          { name: 'Assigned Inspections', path: '/assigned-inspections' },
+        ];
+      case 'owner':
+      default:
+        return [
+          { name: 'Dashboard', path: '/dashboard' },
+          { name: 'My Establishments', path: '/my-establishments' },
+          { name: 'My Applications', path: '/my-applications' },
+        ];
+    }
+  };
+
+  const menuItems = getMenuItems();
 
   return (
     <nav className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-subtle fixed w-full z-10">
@@ -80,21 +85,23 @@ const Navbar = ({ userRole, userName }: NavbarProps) => {
           
           {/* User account section */}
           <div className="hidden md:flex md:items-center md:space-x-4">
-            {userRole ? (
+            {user ? (
               <div className="flex items-center gap-4">
                 <div className="text-sm text-gray-700 dark:text-gray-300">
                   <span className="block text-xs text-gray-500 dark:text-gray-400">
-                    {userRole === 'admin' ? 'Administrator' : userRole === 'inspector' ? 'Fire Inspector' : 'Establishment Owner'}
+                    {profile?.role === 'admin' ? 'Administrator' : profile?.role === 'inspector' ? 'Fire Inspector' : 'Establishment Owner'}
                   </span>
-                  <span className="font-medium">{userName || 'User'}</span>
+                  <span className="font-medium">{profile ? `${profile.first_name} ${profile.last_name}` : 'User'}</span>
                 </div>
-                <button
+                <Button
                   onClick={handleLogout}
-                  className="inline-flex items-center justify-center rounded-md border border-transparent p-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 focus-visible:outline-none transition-colors"
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
                   aria-label="Logout"
                 >
                   <LogOut className="h-5 w-5" aria-hidden="true" />
-                </button>
+                </Button>
               </div>
             ) : (
               <Link
@@ -144,7 +151,7 @@ const Navbar = ({ userRole, userName }: NavbarProps) => {
             </Link>
           ))}
           
-          {userRole && (
+          {user && (
             <button
               onClick={() => {
                 setIsMenuOpen(false);
@@ -157,7 +164,7 @@ const Navbar = ({ userRole, userName }: NavbarProps) => {
           )}
         </div>
         
-        {userRole && (
+        {user && (
           <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-800">
             <div className="flex items-center px-4">
               <div className="flex-shrink-0">
@@ -166,9 +173,11 @@ const Navbar = ({ userRole, userName }: NavbarProps) => {
                 </div>
               </div>
               <div className="ml-3">
-                <div className="text-base font-medium text-gray-800 dark:text-white">{userName || 'User'}</div>
+                <div className="text-base font-medium text-gray-800 dark:text-white">
+                  {profile ? `${profile.first_name} ${profile.last_name}` : 'User'}
+                </div>
                 <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {userRole === 'admin' ? 'Administrator' : userRole === 'inspector' ? 'Fire Inspector' : 'Establishment Owner'}
+                  {profile?.role === 'admin' ? 'Administrator' : profile?.role === 'inspector' ? 'Fire Inspector' : 'Establishment Owner'}
                 </div>
               </div>
             </div>
