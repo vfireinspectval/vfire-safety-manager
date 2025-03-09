@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Building, Calendar, Clock, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -65,8 +66,8 @@ const EstablishmentCard = ({
                 <div className="flex justify-between">
                   <span className="text-gray-600">{app.type}</span>
                   <span className={`px-2 py-0.5 rounded-full text-xs ${
-                    app.status === 'Approved' ? 'bg-green-100 text-green-800' : 
-                    app.status === 'Pending' ? 'bg-amber-100 text-amber-800' :
+                    app.status === 'approved' ? 'bg-green-100 text-green-800' : 
+                    app.status === 'pending' ? 'bg-amber-100 text-amber-800' :
                     'bg-blue-100 text-blue-800'
                   }`}>
                     {app.status}
@@ -74,7 +75,7 @@ const EstablishmentCard = ({
                 </div>
                 <div className="flex items-center gap-1 text-gray-500">
                   <Calendar className="h-3 w-3" />
-                  <span>{app.date}</span>
+                  <span>{app.application_date}</span>
                 </div>
               </div>
             ))}

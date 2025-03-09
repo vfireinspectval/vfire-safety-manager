@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -16,7 +17,7 @@ import EstablishmentCard from '@/components/EstablishmentCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { ApplicationType, Establishment } from '@/types/application';
+import { ApplicationType, ApplicationStatus, Establishment } from '@/types/application';
 
 // Mock data for dashboard
 const mockEstablishments: Establishment[] = [
@@ -31,10 +32,17 @@ const mockEstablishments: Establishment[] = [
     applications: [
       {
         id: 'app1',
-        type: 'fsic-business' as ApplicationType,
-        status: 'approved' as ApplicationStatus,
-        date: '2023-11-15'
-      } as any
+        type: 'fsic-business',
+        establishment_id: '1',
+        owner_id: 'owner1',
+        establishment_name: 'ABC Restaurant',
+        dti_certificate_no: 'DTI-123456789',
+        application_date: '2023-11-15',
+        application_time: '09:00 AM',
+        status: 'approved',
+        created_at: '2023-11-15',
+        updated_at: '2023-11-15'
+      }
     ]
   },
   {
