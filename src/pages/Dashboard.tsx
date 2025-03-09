@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   Building, 
   FileText, 
@@ -11,15 +12,15 @@ import {
   Flame,
   AlertTriangle
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import EstablishmentCard from '@/components/EstablishmentCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { ApplicationType, Establishment } from '@/types/application';
 
 // Mock data for dashboard
-const mockEstablishments = [
+const mockEstablishments: Establishment[] = [
   {
     id: '1',
     name: 'ABC Restaurant',
