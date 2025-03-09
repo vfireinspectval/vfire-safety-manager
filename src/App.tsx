@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +14,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import NotFound from "./pages/NotFound";
 import Unauthorized from "./pages/Unauthorized";
 import ProfilePage from "./pages/ProfilePage";
+import CreateAdminPage from "./pages/CreateAdminPage";
 
 // Placeholder component for missing pages
 const PlaceholderPage = ({ title }: { title: string }) => (
@@ -78,9 +78,11 @@ const App = () => (
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Navigate to="/login/owner" replace />} />
+            <Route path="/login/:role" element={<Login />} />
             <Route path="/register" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/create-admin" element={<CreateAdminPage />} />
             
             {/* Authenticated Routes with AppLayout */}
             <Route element={<AppLayout />}>

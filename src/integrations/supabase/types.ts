@@ -190,6 +190,7 @@ export type Database = {
         Row: {
           account_status: Database["public"]["Enums"]["establishment_status"]
           created_at: string
+          email: string | null
           first_name: string
           id: string
           last_name: string
@@ -202,6 +203,7 @@ export type Database = {
         Insert: {
           account_status?: Database["public"]["Enums"]["establishment_status"]
           created_at?: string
+          email?: string | null
           first_name: string
           id: string
           last_name: string
@@ -214,6 +216,7 @@ export type Database = {
         Update: {
           account_status?: Database["public"]["Enums"]["establishment_status"]
           created_at?: string
+          email?: string | null
           first_name?: string
           id?: string
           last_name?: string

@@ -1,4 +1,3 @@
-
 export type ApplicationType = 'fsec' | 'fsic-business' | 'fsic-occupancy';
 export type UserRole = 'admin' | 'inspector' | 'owner';
 export type EstablishmentStatus = 'unregistered' | 'pending' | 'registered' | 'rejected';
@@ -16,19 +15,24 @@ export interface Profile {
   rejection_reason?: string;
   created_at: string;
   updated_at: string;
-  email?: string; // Added email property
+  email?: string;
 }
 
 export interface Establishment {
   id: string;
   owner_id: string;
-  name: string; // Changed from establishment_name
-  dtiNumber: string; // Changed from dti_certificate_no
+  name: string;
+  dtiNumber: string;
   status: EstablishmentStatus;
   rejection_reason?: string;
   created_at: string;
   updated_at: string;
-  applications?: Application[]; // Added to match Dashboard usage
+  applications?: Application[];
+}
+
+export interface EstablishmentInput {
+  name: string;
+  dtiNumber: string;
 }
 
 export interface Application {

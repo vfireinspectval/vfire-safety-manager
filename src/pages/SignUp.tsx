@@ -11,7 +11,7 @@ export default function SignUp() {
   useEffect(() => {
     // If user is already logged in, redirect to dashboard
     if (user && !isLoading) {
-      navigate('/dashboard');
+      navigate('/owner/dashboard');
     }
   }, [user, isLoading, navigate]);
 
@@ -26,7 +26,7 @@ export default function SignUp() {
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-lg">
         <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <SignUpForm />
         </div>

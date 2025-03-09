@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { Profile, UserRole } from '@/types/application';
+import { Profile, UserRole, EstablishmentInput } from '@/types/application';
 import { useToast } from '@/components/ui/use-toast';
 
 type AuthContextType = {
@@ -13,6 +13,7 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (userData: SignUpData) => Promise<void>;
   signOut: () => Promise<void>;
+  createAdminUser: (email: string, password: string) => Promise<void>;
 };
 
 export type SignUpData = {
@@ -24,6 +25,7 @@ export type SignUpData = {
   role?: UserRole;
   establishment_name?: string;
   dti_certificate_no?: string;
+  establishments?: EstablishmentInput[];
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -118,10 +120,94 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  async function createAdminUser(email: string, password: string) {
+    try {
+      setIsLoading(true);
+      
+      // Check if admin user already exists
+      const { data: existingAdmin, error: checkError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('role', 'admin')
+        .eq('email', email)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {  // PGRST116 is "no rows returned"
+        throw checkError;
+      }
+
+      if (existingAdmin) {
+        toast({
+          title: 'Admin exists',
+          description: 'Admin user already exists.',
+        });
+        return;
+      }
+
+      // Create admin user
+      const { error: signUpError, data } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: 'Admin',
+            last_name: 'User',
+            role: 'admin',
+          },
+        },
+      });
+
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      // Update profile
+      if (data?.user) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            account_status: 'registered',
+            role: 'admin',
+            email: email,
+          })
+          .eq('id', data.user.id);
+
+        if (updateError) {
+          throw updateError;
+        }
+      }
+
+      toast({
+        title: 'Admin created',
+        description: 'Admin user has been created successfully.',
+      });
+    } catch (error: any) {
+      console.error('Admin creation error:', error);
+      toast({
+        title: 'Admin creation failed',
+        description: error.message || 'An error occurred during admin creation',
+        variant: 'destructive',
+      });
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function signUp(userData: SignUpData) {
     try {
       setIsLoading(true);
-      const { email, password, first_name, middle_name, last_name, role = 'owner' } = userData;
+      const { 
+        email, 
+        password, 
+        first_name, 
+        middle_name, 
+        last_name, 
+        role = 'owner',
+        establishment_name,
+        dti_certificate_no,
+        establishments = []
+      } = userData;
 
       // Register user with Supabase Auth
       const { error: signUpError, data } = await supabase.auth.signUp({
@@ -133,6 +219,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             middle_name,
             last_name,
             role,
+            email, // Store email in user metadata
           },
         },
       });
@@ -141,24 +228,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw signUpError;
       }
 
-      // For establishment owners, create an establishment record
-      if (role === 'owner' && userData.establishment_name && userData.dti_certificate_no && data?.user) {
-        const { error: establishmentError } = await supabase
-          .from('establishments')
-          .insert({
-            owner_id: data.user.id,
-            establishment_name: userData.establishment_name,
-            dti_certificate_no: userData.dti_certificate_no,
-            status: 'pending',
-          });
+      // Update profile with email
+      if (data?.user) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            email: email,
+          })
+          .eq('id', data.user.id);
 
-        if (establishmentError) {
-          console.error('Error creating establishment:', establishmentError);
-          toast({
-            title: 'Establishment Creation Error',
-            description: 'Your account was created but there was an error registering your establishment.',
-            variant: 'destructive',
-          });
+        if (updateError) {
+          console.error('Error updating profile:', updateError);
+        }
+      }
+
+      // For establishment owners, create establishment record(s)
+      if (role === 'owner' && data?.user) {
+        // First establishment (from original form)
+        if (establishment_name && dti_certificate_no) {
+          const { error: establishmentError } = await supabase
+            .from('establishments')
+            .insert({
+              owner_id: data.user.id,
+              establishment_name: establishment_name,
+              dti_certificate_no: dti_certificate_no,
+              status: 'pending',
+            });
+
+          if (establishmentError) {
+            console.error('Error creating establishment:', establishmentError);
+            toast({
+              title: 'Establishment Creation Error',
+              description: 'Your account was created but there was an error registering your establishment.',
+              variant: 'destructive',
+            });
+          }
+        }
+
+        // Additional establishments from array
+        if (establishments.length > 0) {
+          for (const est of establishments) {
+            const { error: additionalEstablishmentError } = await supabase
+              .from('establishments')
+              .insert({
+                owner_id: data.user.id,
+                establishment_name: est.name,
+                dti_certificate_no: est.dtiNumber,
+                status: 'pending',
+              });
+
+            if (additionalEstablishmentError) {
+              console.error('Error creating additional establishment:', additionalEstablishmentError);
+            }
+          }
         }
       }
 
@@ -206,6 +328,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signUp,
     signOut,
+    createAdminUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
