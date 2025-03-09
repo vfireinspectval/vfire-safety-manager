@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -63,6 +62,12 @@ export default function SignUpForm() {
   const onSubmit = async (data: FormValues) => {
     try {
       setIsLoading(true);
+
+      // Prepare establishments data
+      const establishments: EstablishmentInput[] = data.establishments.map(est => ({
+        name: est.name,
+        dtiNumber: est.dtiNumber
+      }));
       
       await signUp({
         email: data.email,
@@ -71,19 +76,8 @@ export default function SignUpForm() {
         middle_name: data.middleName,
         last_name: data.lastName,
         role: 'owner',
-        establishment_name: data.establishments[0].name,
-        dti_certificate_no: data.establishments[0].dtiNumber,
+        establishments: establishments
       });
-
-      // For additional establishments (if any), create them after signup
-      if (data.establishments.length > 1) {
-        // The additional establishments will be created in the AuthContext
-
-        toast({
-          title: 'Additional establishments registered',
-          description: 'Your additional establishments have been registered and are pending approval.',
-        });
-      }
 
       // Show success notification
       toast({

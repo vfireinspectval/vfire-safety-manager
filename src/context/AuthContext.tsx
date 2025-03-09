@@ -124,27 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
       
-      // Check if admin user already exists
-      const { data: existingAdmin, error: checkError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('role', 'admin')
-        .eq('email', email)
-        .single();
-
-      if (checkError && checkError.code !== 'PGRST116') {  // PGRST116 is "no rows returned"
-        throw checkError;
-      }
-
-      if (existingAdmin) {
-        toast({
-          title: 'Admin exists',
-          description: 'Admin user already exists.',
-        });
-        return;
-      }
-
-      // Create admin user
+      // Sign up the admin user
       const { error: signUpError, data } = await supabase.auth.signUp({
         email,
         password,
@@ -161,26 +141,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw signUpError;
       }
 
-      // Update profile
-      if (data?.user) {
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({
-            account_status: 'registered',
-            role: 'admin',
-            email: email,
-          })
-          .eq('id', data.user.id);
-
-        if (updateError) {
-          throw updateError;
-        }
+      // Check if user was created successfully
+      if (!data?.user) {
+        throw new Error('Failed to create admin user');
       }
 
-      toast({
-        title: 'Admin created',
-        description: 'Admin user has been created successfully.',
-      });
+      // Manually create the profile since we might be having issues with the database trigger
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: data.user.id,
+          first_name: 'Admin',
+          last_name: 'User',
+          role: 'admin',
+          account_status: 'registered',
+          email: email,
+        });
+
+      if (profileError) {
+        console.error('Error creating admin profile:', profileError);
+        toast({
+          title: 'Profile Creation Issue',
+          description: 'Admin user created but there was an issue with the profile. Please contact support.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Admin created',
+          description: 'Admin user has been created successfully.',
+        });
+      }
     } catch (error: any) {
       console.error('Admin creation error:', error);
       toast({
@@ -204,8 +194,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         middle_name, 
         last_name, 
         role = 'owner',
-        establishment_name,
-        dti_certificate_no,
         establishments = []
       } = userData;
 
@@ -219,7 +207,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             middle_name,
             last_name,
             role,
-            email, // Store email in user metadata
           },
         },
       });
@@ -228,47 +215,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw signUpError;
       }
 
-      // Update profile with email
-      if (data?.user) {
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({
-            email: email,
-          })
-          .eq('id', data.user.id);
+      if (!data?.user) {
+        throw new Error('Failed to create user account');
+      }
 
-        if (updateError) {
-          console.error('Error updating profile:', updateError);
-        }
+      // Manually create the profile since we might be having issues with the database trigger
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: data.user.id,
+          first_name,
+          middle_name,
+          last_name,
+          role,
+          account_status: 'pending',
+          email: email,
+        });
+
+      if (profileError) {
+        console.error('Error creating profile:', profileError);
+        toast({
+          title: 'Profile Creation Issue',
+          description: 'User account created but there was an issue with the profile. Please try again or contact support.',
+          variant: 'destructive',
+        });
+        return;
       }
 
       // For establishment owners, create establishment record(s)
-      if (role === 'owner' && data?.user) {
-        // First establishment (from original form)
-        if (establishment_name && dti_certificate_no) {
-          const { error: establishmentError } = await supabase
-            .from('establishments')
-            .insert({
-              owner_id: data.user.id,
-              establishment_name: establishment_name,
-              dti_certificate_no: dti_certificate_no,
-              status: 'pending',
-            });
-
-          if (establishmentError) {
-            console.error('Error creating establishment:', establishmentError);
-            toast({
-              title: 'Establishment Creation Error',
-              description: 'Your account was created but there was an error registering your establishment.',
-              variant: 'destructive',
-            });
-          }
-        }
-
-        // Additional establishments from array
+      if (role === 'owner') {
+        // Process all establishments
         if (establishments.length > 0) {
           for (const est of establishments) {
-            const { error: additionalEstablishmentError } = await supabase
+            const { error: establishmentError } = await supabase
               .from('establishments')
               .insert({
                 owner_id: data.user.id,
@@ -277,8 +256,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 status: 'pending',
               });
 
-            if (additionalEstablishmentError) {
-              console.error('Error creating additional establishment:', additionalEstablishmentError);
+            if (establishmentError) {
+              console.error('Error creating establishment:', establishmentError);
+              toast({
+                title: 'Establishment Creation Error',
+                description: 'Your account was created but there was an error registering your establishment.',
+                variant: 'destructive',
+              });
             }
           }
         }
