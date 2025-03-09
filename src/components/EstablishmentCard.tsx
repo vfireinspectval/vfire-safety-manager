@@ -67,7 +67,7 @@ const EstablishmentCard = ({
                   <span className="text-gray-600">{app.type}</span>
                   <span className={`px-2 py-0.5 rounded-full text-xs ${
                     app.status === 'approved' ? 'bg-green-100 text-green-800' : 
-                    app.status === 'pending' ? 'bg-amber-100 text-amber-800' :
+                    app.status === 'unscheduled' ? 'bg-amber-100 text-amber-800' :
                     'bg-blue-100 text-blue-800'
                   }`}>
                     {app.status}
