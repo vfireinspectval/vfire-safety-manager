@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
@@ -14,12 +14,7 @@ export function AppLayout() {
   const location = useLocation();
   const { toast } = useToast();
 
-  // Redirect to login if not authenticated
-  if (!isLoading && !user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
-  // Show loading state while checking auth
+  // Show loading state while checking auth (but don't redirect)
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
@@ -40,6 +35,7 @@ export function AppLayout() {
     }
   };
 
+  // Default to 'owner' role if no user is authenticated
   const userRole = profile?.role || 'owner';
   
   return (
@@ -68,13 +64,15 @@ export function AppLayout() {
                 <User className="h-4 w-4 text-gray-500" />
               </div>
               <div className="text-sm">
-                <p className="font-medium">{profile?.first_name} {profile?.last_name}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
+                <p className="font-medium">{profile?.first_name || 'Guest'} {profile?.last_name || 'User'}</p>
+                <p className="text-xs text-muted-foreground">{user?.email || 'Not logged in'}</p>
               </div>
             </div>
-            <Button size="icon" variant="ghost" onClick={handleLogout} title="Logout">
-              <LogOut className="h-4 w-4" />
-            </Button>
+            {user && (
+              <Button size="icon" variant="ghost" onClick={handleLogout} title="Logout">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </SidebarFooter>
       </Sidebar>

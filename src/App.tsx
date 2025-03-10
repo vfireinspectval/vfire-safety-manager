@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -84,7 +85,7 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/create-admin" element={<CreateAdminPage />} />
             
-            {/* Authenticated Routes with AppLayout */}
+            {/* Routes with AppLayout - No auth check */}
             <Route element={<AppLayout />}>
               {/* Shared Routes */}
               <Route path="/profile" element={<ProfilePage />} />

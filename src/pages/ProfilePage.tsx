@@ -8,14 +8,40 @@ import { format } from 'date-fns';
 export default function ProfilePage() {
   const { user, profile } = useAuth();
 
+  // Show default profile information if user is not logged in
   if (!user || !profile) {
     return (
       <div className="container mx-auto py-10">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle>Profile not available</CardTitle>
-            <CardDescription>Please log in to view your profile</CardDescription>
+            <CardTitle>Guest Profile</CardTitle>
+            <CardDescription>You are browsing as a guest. Login functionality is available but not required.</CardDescription>
           </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-3">
+              <User className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-muted-foreground">Full Name</p>
+                <p className="font-medium">Guest User</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Mail className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-muted-foreground">Email Address</p>
+                <p className="font-medium">guest@example.com</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Briefcase className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-muted-foreground">Role</p>
+                <p className="font-medium">Guest</p>
+              </div>
+            </div>
+          </CardContent>
         </Card>
       </div>
     );

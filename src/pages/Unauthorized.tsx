@@ -9,15 +9,12 @@ import { useAuth } from '@/context/AuthContext';
 export default function Unauthorized() {
   const { user, profile } = useAuth();
 
-  const getDashboardPath = () => {
-    if (!user) return '/login';
-    
-    switch (profile?.role) {
-      case 'admin': return '/admin/dashboard';
-      case 'inspector': return '/inspector/dashboard';
-      default: return '/owner/dashboard';
-    }
-  };
+  // Provide links to all dashboards
+  const dashboardLinks = [
+    { path: '/admin/dashboard', label: 'Admin Dashboard' },
+    { path: '/inspector/dashboard', label: 'Inspector Dashboard' },
+    { path: '/owner/dashboard', label: 'Owner Dashboard' }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -36,7 +33,7 @@ export default function Unauthorized() {
             Access Denied
           </h2>
           <p className="mt-2 text-center text-lg text-gray-600">
-            You don't have permission to access this page.
+            This page would normally require special permissions.
           </p>
         </motion.div>
 
@@ -49,15 +46,16 @@ export default function Unauthorized() {
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <div className="space-y-4">
               <p className="text-center text-gray-700">
-                This page may be restricted to certain user roles or require special permissions.
+                Since authentication has been disabled, you can navigate to any dashboard:
               </p>
               <div className="flex flex-col space-y-3">
-                <Button asChild>
-                  <Link to={getDashboardPath()}>
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Return to Dashboard
-                  </Link>
-                </Button>
+                {dashboardLinks.map((link) => (
+                  <Button key={link.path} asChild>
+                    <Link to={link.path}>
+                      {link.label}
+                    </Link>
+                  </Button>
+                ))}
                 <Button asChild variant="outline">
                   <Link to="/">Go to Home Page</Link>
                 </Button>

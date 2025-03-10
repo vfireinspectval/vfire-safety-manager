@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import { z } from 'zod';
@@ -48,19 +47,6 @@ export default function Login() {
     }
   }, [role, form]);
 
-  // Redirect if already logged in based on role
-  useEffect(() => {
-    if (user) {
-      const dashboardPath = role === 'admin' 
-        ? '/admin/dashboard' 
-        : role === 'inspector' 
-          ? '/inspector/dashboard' 
-          : '/owner/dashboard';
-      
-      navigate(dashboardPath);
-    }
-  }, [user, role, navigate]);
-
   // Format role for display
   const getRoleDisplay = () => {
     switch (role) {
@@ -81,7 +67,8 @@ export default function Login() {
         description: `Welcome back, Administrator.`,
       });
       
-      // Will be redirected by the useEffect
+      // Navigate to admin dashboard
+      navigate('/admin/dashboard');
     } catch (error: any) {
       console.error('Login error:', error);
       toast({
@@ -105,7 +92,14 @@ export default function Login() {
         description: `Welcome back, ${getRoleDisplay()}.`,
       });
 
-      // Redirect based on role (will be handled by AuthContext)
+      // Redirect based on role
+      const dashboardPath = role === 'admin' 
+        ? '/admin/dashboard' 
+        : role === 'inspector' 
+          ? '/inspector/dashboard' 
+          : '/owner/dashboard';
+      
+      navigate(dashboardPath);
     } catch (error: any) {
       console.error('Login error:', error);
       toast({
