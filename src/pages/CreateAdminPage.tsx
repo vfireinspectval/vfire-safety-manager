@@ -9,8 +9,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Link } from 'react-router-dom';
-import { ShieldAlert, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, CheckCircle2, Key } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useCreateVerifiedAdmin } from '@/hooks/useCreateVerifiedAdmin';
+import { Separator } from '@/components/ui/separator';
 
 // Form validation schema
 const formSchema = z.object({
@@ -26,6 +28,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function CreateAdminPage() {
   const { createAdminUser } = useAuth();
+  const { createVerifiedAdmin, isLoading: isVerifiedLoading, isCreated } = useCreateVerifiedAdmin();
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,9 +37,9 @@ export default function CreateAdminPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: 'vfireinspectval@gmail.com',
-      password: 'vfireinspectval2025',
-      confirmPassword: 'vfireinspectval2025',
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
@@ -74,7 +77,7 @@ export default function CreateAdminPage() {
               Create Admin User
             </CardTitle>
             <CardDescription className="text-center">
-              This will create the default admin account with the specified credentials
+              Create a new admin account with custom credentials
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -164,6 +167,37 @@ export default function CreateAdminPage() {
                 )}
               </form>
             </Form>
+
+            <Separator className="my-6" />
+
+            <div className="space-y-4">
+              <h3 className="text-md font-medium flex items-center">
+                <Key className="h-4 w-4 mr-2" />
+                Create Verified Admin
+              </h3>
+              <p className="text-sm text-gray-500">
+                Create the predefined admin account with email: vfireinspectval@gmail.com
+              </p>
+              
+              <Button 
+                onClick={createVerifiedAdmin}
+                variant="outline"
+                className="w-full"
+                disabled={isVerifiedLoading || isCreated}
+              >
+                {isVerifiedLoading ? 'Creating...' : isCreated ? 'Admin Created' : 'Create Verified Admin'}
+              </Button>
+
+              {isCreated && (
+                <Alert className="mt-4 bg-green-50 border-green-200">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <AlertTitle>Verified Admin Created</AlertTitle>
+                  <AlertDescription>
+                    The verified admin account (vfireinspectval@gmail.com) has been successfully created.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
           </CardContent>
           <CardFooter className="flex justify-center">
             <Button variant="outline" asChild>

@@ -1,10 +1,10 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { ArrowRight, LucideShieldAlert } from 'lucide-react';
+import { ArrowRight, LucideShieldAlert, Key } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,22 +32,34 @@ export default function Login() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: role === 'admin' ? 'vfireinspectval@gmail.com' : '',
+      password: role === 'admin' ? 'vfireinspectval2025' : '',
     },
   });
 
+  // Update form fields when role changes
+  useEffect(() => {
+    if (role === 'admin') {
+      form.setValue('email', 'vfireinspectval@gmail.com');
+      form.setValue('password', 'vfireinspectval2025');
+    } else {
+      form.setValue('email', '');
+      form.setValue('password', '');
+    }
+  }, [role, form]);
+
   // Redirect if already logged in based on role
-  if (user) {
-    const dashboardPath = role === 'admin' 
-      ? '/admin/dashboard' 
-      : role === 'inspector' 
-        ? '/inspector/dashboard' 
-        : '/owner/dashboard';
-    
-    navigate(dashboardPath);
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      const dashboardPath = role === 'admin' 
+        ? '/admin/dashboard' 
+        : role === 'inspector' 
+          ? '/inspector/dashboard' 
+          : '/owner/dashboard';
+      
+      navigate(dashboardPath);
+    }
+  }, [user, role, navigate]);
 
   // Format role for display
   const getRoleDisplay = () => {
@@ -55,6 +67,30 @@ export default function Login() {
       case 'admin': return 'Administrator';
       case 'inspector': return 'Fire Inspector';
       default: return 'Establishment Owner';
+    }
+  };
+
+  const handleAdminQuickLogin = async () => {
+    try {
+      setIsLoading(true);
+      await signIn('vfireinspectval@gmail.com', 'vfireinspectval2025');
+      
+      // Successful login
+      toast({
+        title: 'Login successful',
+        description: `Welcome back, Administrator.`,
+      });
+      
+      // Will be redirected by the useEffect
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast({
+        title: 'Login failed',
+        description: error.message || 'Invalid email or password',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -82,6 +118,10 @@ export default function Login() {
     }
   };
 
+  if (user) {
+    return null; // Return null while redirecting
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -102,6 +142,17 @@ export default function Login() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {role === 'admin' && (
+              <Button 
+                className="w-full mb-4 flex items-center justify-center"
+                onClick={handleAdminQuickLogin}
+                disabled={isLoading}
+              >
+                <Key className="h-4 w-4 mr-2" />
+                {isLoading ? 'Logging in...' : 'Quick Login as Verified Admin'}
+              </Button>
+            )}
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
