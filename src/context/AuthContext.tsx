@@ -146,31 +146,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Failed to create admin user');
       }
 
-      // Manually create the profile since we might be having issues with the database trigger
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: data.user.id,
-          first_name: 'Admin',
-          last_name: 'User',
-          role: 'admin',
-          account_status: 'registered',
-          email: email,
-        });
-
-      if (profileError) {
-        console.error('Error creating admin profile:', profileError);
-        toast({
-          title: 'Profile Creation Issue',
-          description: 'Admin user created but there was an issue with the profile. Please contact support.',
-          variant: 'destructive',
-        });
-      } else {
-        toast({
-          title: 'Admin created',
-          description: 'Admin user has been created successfully.',
-        });
-      }
+      toast({
+        title: 'Admin created',
+        description: 'Admin user has been created successfully.',
+      });
     } catch (error: any) {
       console.error('Admin creation error:', error);
       toast({
@@ -219,51 +198,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Failed to create user account');
       }
 
-      // Manually create the profile since we might be having issues with the database trigger
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: data.user.id,
-          first_name,
-          middle_name,
-          last_name,
-          role,
-          account_status: 'pending',
-          email: email,
-        });
-
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
-        toast({
-          title: 'Profile Creation Issue',
-          description: 'User account created but there was an issue with the profile. Please try again or contact support.',
-          variant: 'destructive',
-        });
-        return;
-      }
-
       // For establishment owners, create establishment record(s)
-      if (role === 'owner') {
-        // Process all establishments
-        if (establishments.length > 0) {
-          for (const est of establishments) {
-            const { error: establishmentError } = await supabase
-              .from('establishments')
-              .insert({
-                owner_id: data.user.id,
-                establishment_name: est.name,
-                dti_certificate_no: est.dtiNumber,
-                status: 'pending',
-              });
+      if (role === 'owner' && establishments.length > 0) {
+        for (const est of establishments) {
+          const { error: establishmentError } = await supabase
+            .from('establishments')
+            .insert({
+              owner_id: data.user.id,
+              establishment_name: est.name,
+              dti_certificate_no: est.dtiNumber,
+              status: 'pending',
+            });
 
-            if (establishmentError) {
-              console.error('Error creating establishment:', establishmentError);
-              toast({
-                title: 'Establishment Creation Error',
-                description: 'Your account was created but there was an error registering your establishment.',
-                variant: 'destructive',
-              });
-            }
+          if (establishmentError) {
+            console.error('Error creating establishment:', establishmentError);
+            toast({
+              title: 'Establishment Creation Error',
+              description: 'Your account was created but there was an error registering your establishment.',
+              variant: 'destructive',
+            });
           }
         }
       }
